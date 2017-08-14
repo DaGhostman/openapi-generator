@@ -1,4 +1,5 @@
 {
+  "name": "ddimitrov/openapi-generator",
   "description": "Swagger/OpenAPI specification generator",
   "authors": [{
     "name": "Dimitar Dimitrov",
