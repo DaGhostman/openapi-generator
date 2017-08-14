@@ -1,0 +1,62 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "My Awesome API",
+        "description": "Swagger/OpenAPI specification generator",
+        "version": "1.0.0",
+        "contact": {
+            "name": "Dimitar Dimitrov",
+            "email": "daghostman.dd@gmail.com"
+        }
+    },
+    "components": {
+        "schemas": {
+            "Error": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "format": "",
+                        "example": "Fatal Error"
+                    },
+                    "code": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 123456
+                    },
+                    "details": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": [
+                            "Invalid page number",
+                            "Offset out of bounds"
+                        ]
+                    }
+                }
+            }
+        },
+        "responses": {
+            "NotFound": {
+                "description": "Not Found Page",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "servers": [
+        {
+            "url": "https://localhost/",
+            "description": "The API server"
+        }
+    ],
+    "externalDocs": {
+        "url": "http://example.com"
+    }
+}
