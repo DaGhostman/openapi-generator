@@ -10,6 +10,7 @@ namespace OpenAPI\Spec\Entities\Components;
 
 
 use OpenAPI\Spec\Entities\Helpers\Describable;
+use OpenAPI\Spec\Entities\Helpers\Named;
 use OpenAPI\Spec\Interfaces\Component;
 
 class RequestBody implements Component
@@ -17,9 +18,10 @@ class RequestBody implements Component
     private $required;
     private $content = [];
 
-    use Describable;
-    public function __construct(bool $required = false)
+    use Named, Describable;
+    public function __construct(string $name, bool $required = false)
     {
+        $this->setName($name);
         $this->required = $required;
     }
 
@@ -31,5 +33,17 @@ class RequestBody implements Component
     public function addContent(string $name, MediaType $type)
     {
         $this->content[$name] = $type;
+    }
+
+    public function toArray(): array
+    {
+        $response = [
+            'content' => [],
+        ];
+        foreach ($this->content as $mime => $content) {
+            $response['content'][$mime] = $content->toArray();
+        }
+
+        return $response;
     }
 }
