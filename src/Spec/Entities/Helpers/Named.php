@@ -17,6 +17,6 @@ trait Named
 
     public function hasName(): bool
     {
-        return $this->name !== null;
+        return $this->name !== null && $this->name !== '';
     }
 }
