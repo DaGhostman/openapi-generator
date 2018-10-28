@@ -39,6 +39,11 @@ class Path implements Component
             $result['description'] = $this->getDescription();
         }
 
+
+        foreach ($this->getParameters() as $parameter) {
+            $result['parameters'][] = $parameter->toArray();
+        }
+
         foreach ($this->getOperations() as $name => $operation) {
             $result[$name] = $operation->toArray();
         }
