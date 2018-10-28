@@ -3,31 +3,20 @@ namespace OpenAPI\Spec\Entities\Helpers;
 
 trait Secured
 {
-    private $name;
-    private $scopes = [];
+    private $security = [];
 
-    public function setScheme(string $name)
+    public function addSecurity(string $scheme, array $scopes)
     {
-        $this->name = $name;
+        $this->security[$scheme] = $scopes;
     }
 
-    public function getScheme(): string
+    public function hasSecurity()
     {
-        return (string) $this->name;
+        return !empty($this->security);
     }
 
-    public function hasScheme(): bool
+    public function getSecurity()
     {
-        return $this->name !== null && $this->name !== '';
-    }
-
-    public function setScopes(string $scopes): string
-    {
-        return $this->scopes = $scopes;
-    }
-
-    public function getScopes()
-    {
-        return $this->scopes;
+        return $this->security;
     }
 }

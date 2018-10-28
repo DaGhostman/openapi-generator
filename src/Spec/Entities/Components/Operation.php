@@ -99,8 +99,8 @@ class Operation implements Component
             $result['requestBody'] = $this->getRequestBody()->toArray();
         }
 
-        if ($this->hasScheme()) {
-            $result[$this->getScheme()] = $this->getScheme() === 'http' ? [] : $this->getScopes();
+        if ($this->hasSecurity()) {
+            $result['security'] = $this->getSecurity();
         }
 
         foreach ($this->getTags() as $tag) {
