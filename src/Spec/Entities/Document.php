@@ -6,6 +6,7 @@ use OpenAPI\Spec\Entities\Components\Response;
 use OpenAPI\Spec\Entities\Components\Schema;
 use OpenAPI\Spec\Entities\Helpers\Documentable;
 use OpenAPI\Spec\Interfaces\Component;
+use OpenAPI\Spec\Entities\Components\RequestBody;
 
 class Document
 {
@@ -89,6 +90,10 @@ class Document
 
         if ($component instanceof Security) {
             $type = 'securitySchemes';
+        }
+
+        if ($component instanceof RequestBody) {
+            $type = 'requestBodies';
         }
 
         if (!isset($type)) {
