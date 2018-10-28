@@ -8,6 +8,7 @@ use OpenAPI\Spec\Interfaces\Component;
 class Property implements Component
 {
     private $examples = [];
+    private $values = [];
 
     use Named, Formatted;
 
@@ -37,6 +38,21 @@ class Property implements Component
         return !empty($this->examples);
     }
 
+    public function setValues(string $values)
+    {
+        $this->values = $values;
+    }
+
+    public function getValues(): array
+    {
+        return $this->values;
+    }
+
+    public function hasValues(): bool
+    {
+        return !empty($this->values);
+    }
+
     public function toArray(): array
     {
         $result = [
@@ -45,10 +61,16 @@ class Property implements Component
 
         if ($this->getType() === 'array') {
             $result['items'] = [
-                strpos($this->getFormat(), '#') ? '$ref' : 'type' => $this->getFormat()
+                strpos($this->getFormat(), '#') === 0 ? '$ref' : 'type' => $this->getFormat()
             ];
         } else {
-            $result['format'] = $this->getFormat();
+            if ($this->hasFormat()) {
+                $result['format'] = $this->getFormat();
+            }
+        }
+
+        if ($this->hasValues()) {
+            $result['enum'] = $this->getValues();
         }
 
         if ($this->hasExamples()) {
