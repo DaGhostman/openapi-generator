@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 namespace OpenAPI\Spec\Entities\Helpers;
 
-use OpenAPI\Spec\Entities\Param;
+use OpenAPI\Spec\Entities\Components\Param;
 
 trait Parametrised
 {
