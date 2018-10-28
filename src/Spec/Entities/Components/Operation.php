@@ -23,6 +23,7 @@ class Operation implements Component
     private $responses = [];
     private $security = [];
     private $servers = [];
+    private $requestBody;
 
     use Named, Describable, Documentable, Taggable;
 
@@ -86,11 +87,30 @@ class Operation implements Component
         return !empty($this->servers);
     }
 
+    public function setRequestBody(ReferenceObject $requestBody)
+    {
+        $this->requestBody = $requestBody;
+    }
+
+    public function hasRequestBody(): bool
+    {
+        return $this->requestBody !== null;
+    }
+
+    public function getRequestBody(): ReferenceObject
+    {
+        return $this->requestBody;
+    }
+
     public function toArray(): array
     {
         $result = [];
         foreach ($this->getResponses() as $status => $response) {
             $result['responses'][$status] = $response->toArray();
+        }
+
+        if ($this->hasRequestBody()) {
+            $result['requestBody'] = $this->getRequestBody()->toArray();
         }
 
         foreach ($this->getTags() as $tag) {
