@@ -16,6 +16,7 @@ use OpenAPI\Spec\Entities\Helpers\Taggable;
 use OpenAPI\Spec\Entities\Security;
 use OpenAPI\Spec\Entities\Server;
 use OpenAPI\Spec\Interfaces\Component;
+use OpenAPI\Spec\Entities\Helpers\Secured;
 
 class Operation implements Component
 {
@@ -25,7 +26,7 @@ class Operation implements Component
     private $servers = [];
     private $requestBody;
 
-    use Named, Describable, Documentable, Taggable;
+    use Named, Describable, Documentable, Taggable, Secured;
 
     public function __construct(string $name, bool $deprecated = false)
     {
@@ -55,21 +56,6 @@ class Operation implements Component
     public function hasResponses(): bool
     {
         return !empty($this->responses);
-    }
-
-    public function addSecurity(Security $security)
-    {
-        $this->security[$security->getName()] = $security;
-    }
-
-    public function getSecurity(): array
-    {
-        return (array) $this->security;
-    }
-
-    public function hasSecurity(): bool
-    {
-        return !empty($this->security);
     }
 
     public function addServer(Server $server)
@@ -111,6 +97,10 @@ class Operation implements Component
 
         if ($this->hasRequestBody()) {
             $result['requestBody'] = $this->getRequestBody()->toArray();
+        }
+
+        if ($this->hasScheme()) {
+            $result[$this->getScheme()] = $this->getScheme() === 'http' ? [] : $this->getScopes();
         }
 
         foreach ($this->getTags() as $tag) {
