@@ -1,28 +1,84 @@
 <?php declare(strict_types=1);
 namespace OpenAPI\Spec\Entities;
 
-class Security
+use OpenAPI\Spec\Entities\Helpers\Describable;
+use OpenAPI\Spec\Entities\Helpers\Named;
+use OpenAPI\Spec\Entities\Helpers\Typed;
+use OpenAPI\Spec\Interfaces\Component;
+
+class Security implements Component
 {
     private $name;
     private $values;
-    public function __construct(string $name, array $values = [])
+    private $place = 'apiKey';
+    private $scheme = 'http';
+    private $bearerFormat;
+
+    use Named, Typed, Describable;
+
+    public function __construct(string $name = '')
     {
-        $this->name = $name;
-        $this->values = $values;
+        $this->setName($name);
     }
 
-    public function getName(): string
+    public function setPlace(string $place)
     {
-        return (string) $this->name;
+        $this->place = $place;
     }
 
-    public function getValues(): array
+    public function getPlace(): string
     {
-        return (array) $this->values;
+        return $this->place;
     }
 
-    public function hasValues(): bool
+    public function setBearerFormat(string $format)
     {
-        return !empty($this->values);
+        $this->bearerFormat = $format;
+    }
+
+    public function hasBearerFormat(): bool
+    {
+        return $this->bearerFormat !== null;
+    }
+
+    public function getBearerFormat(): string
+    {
+        return $this->bearerFormat;
+    }
+
+    public function setScheme(string $scheme)
+    {
+        $this->scheme = $scheme;
+    }
+
+    public function getScheme(): string
+    {
+        return $this->scheme;
+    }
+
+    public function toArray(): array
+    {
+        $response = [
+            'type' => $this->getType(),
+        ];
+
+        if ($this->getType() === 'apiKey') {
+            $response['in'] = $this->getPlace();
+            $response['name'] = $this->getName();
+        }
+
+        if ($this->getType() === 'http') {
+            $response['scheme'] = $this->getScheme();
+
+            if ($this->hasBearerFormat()) {
+                $response['bearerFormat'] = $this->getBearerFormat();
+            }
+        }
+
+        if ($this->hasDescription()) {
+            $response['description'] = $this->getDescription();
+        }
+
+        return $response;
     }
 }
