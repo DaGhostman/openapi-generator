@@ -71,13 +71,20 @@ class Param implements Component
         $result = [
             'name' => $this->getName(),
             'in' => $this->getPlace(),
-            'required' => $this->isRequired(),
             'deprecated' => $this->isDeprecated(),
             'allowEmptyValue' => $this->isAllowEmpty()
         ];
 
+        if ($this->isRequired()) {
+            $result['required'] = $this->isRequired();
+        }
+
         if ($this->hasDescription()) {
             $result['description'] = $this->getDescription();
+        }
+
+        if ($this->hasType()) {
+            $result['type'] = $this->getType();
         }
 
         return $result;
