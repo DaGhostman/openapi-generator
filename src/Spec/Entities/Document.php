@@ -100,7 +100,12 @@ class Document
             return;
         }
 
-        $this->components[$type][$component->getName()] = $component;
+        if ($component->hasName()) {
+            $this->components[$type][$component->getName()] = $component;
+        } else {
+            $this->components[$type][] = $component;
+        }
+
     }
 
     public function addPath(Path $path)
