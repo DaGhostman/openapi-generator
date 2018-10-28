@@ -26,6 +26,6 @@ trait Formatted
 
     public function hasFormat(): bool
     {
-        return $this->format !== null;
+        return $this->format !== null && $this->format !== '';
     }
 }
