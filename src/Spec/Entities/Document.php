@@ -139,4 +139,21 @@ class Document
     {
         return $this->tags;
     }
+
+    public function getComponent(string $queryString): ?Component
+    {
+        $queryString = ltrim($queryString, '/#');
+        list($section, $key) = explode('/', $queryString);
+
+        if (isset($this->components[$section][$key])) {
+            return $this->components[$section][$key];
+        }
+
+        return null;
+    }
+
+    public function getPath(string $uri): ?Path
+    {
+        return $this->paths[$uri] ?? null;
+    }
 }
