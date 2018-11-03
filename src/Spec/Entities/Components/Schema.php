@@ -8,6 +8,7 @@ use OpenAPI\Spec\Interfaces\Component;
 class Schema implements Component
 {
     private $properties = [];
+    private $required = [];
 
     use Named, Formatted;
 
@@ -35,6 +36,21 @@ class Schema implements Component
         $this->properties[$property->getName()] = $property;
     }
 
+    public function hasRequired(): bool
+    {
+        return !empty($this->required);
+    }
+
+    public function setRequired(array $required)
+    {
+        $this->required = $required;
+    }
+
+    public function getRequired(): array
+    {
+        return $this->required;
+    }
+
     public function toArray(): array
     {
         $result = [
@@ -42,7 +58,14 @@ class Schema implements Component
         ];
 
         if ($this->hasFormat()) {
-            $result[$this->getType() !== 'array' ? 'format' : 'items'] = $this->getFormat();
+            $format = $this->getFormat();
+
+            $result[$this->getType() !== 'array' ? 'format' : 'items'] =
+                stripos($format, '#') === 0 ? ['$ref' => $format] : $format;
+        }
+
+        if ($this->hasRequired()) {
+            $result['required'] = $this->getRequired();
         }
 
         foreach ($this->getProperties() as $property) {

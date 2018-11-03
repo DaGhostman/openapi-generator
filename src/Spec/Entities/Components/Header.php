@@ -12,10 +12,10 @@ class Header extends Param
     public function toArray(): array
     {
         $result = parent::toArray();
-        $result['schema'] = [
-            'type' => $this->getType(),
-            'format' => $this->getFormat()
-        ];
+        $result['schema']['type'] = $this->getType();
+        if ($this->hasFormat()) {
+            $result['format'] = $this->getFormat();
+        }
 
         unset($result['in']);
         unset($result['name']);

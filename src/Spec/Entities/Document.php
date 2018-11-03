@@ -7,6 +7,7 @@ use OpenAPI\Spec\Entities\Components\Schema;
 use OpenAPI\Spec\Entities\Helpers\Documentable;
 use OpenAPI\Spec\Interfaces\Component;
 use OpenAPI\Spec\Entities\Components\RequestBody;
+use OpenAPI\Spec\Entities\Helpers\Secured;
 
 class Document
 {
@@ -33,9 +34,9 @@ class Document
     /**
      * @var Server[]
      */
-    private $servers;
+    private $servers = [];
 
-    use Documentable;
+    use Documentable, Secured;
 
     public function __construct(Info $info)
     {

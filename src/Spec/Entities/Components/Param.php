@@ -37,7 +37,7 @@ class Param implements Component
 
     public function isDeprecated(): bool
     {
-        return $this->required;
+        return $this->deprecated;
     }
 
     public function setDeprecated(bool $deprecated)
@@ -71,20 +71,29 @@ class Param implements Component
         $result = [
             'name' => $this->getName(),
             'in' => $this->getPlace(),
-            'deprecated' => $this->isDeprecated(),
-            'allowEmptyValue' => $this->isAllowEmpty()
         ];
 
-        if ($this->isRequired()) {
-            $result['required'] = $this->isRequired();
+        $this->setRequired($this->isRequired() || $this->getPlace() === 'path');
+
+        if ($this->isDeprecated()) {
+            $result['deprecated'] = $this->isDeprecated();
         }
+
+        if ($this->isAllowEmpty()) {
+            $result['allowEmptyValue'] = $this->isAllowEmpty();
+        }
+        $result['required'] = $this->isRequired();
 
         if ($this->hasDescription()) {
             $result['description'] = $this->getDescription();
         }
 
         if ($this->hasType()) {
-            $result['type'] = $this->getType();
+            $result['schema']['type'] = $this->getType();
+        }
+
+        if ($this->hasFormat()) {
+            $result['schema']['format'] = $this->getFormat();
         }
 
         return $result;

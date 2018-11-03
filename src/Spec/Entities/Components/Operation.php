@@ -17,21 +17,38 @@ use OpenAPI\Spec\Entities\Security;
 use OpenAPI\Spec\Entities\Server;
 use OpenAPI\Spec\Interfaces\Component;
 use OpenAPI\Spec\Entities\Helpers\Secured;
+use OpenAPI\Spec\Entities\Helpers\Parametrised;
 
 class Operation implements Component
 {
+    private $id;
     private $deprecated;
     private $responses = [];
     private $security = [];
     private $servers = [];
     private $requestBody;
 
-    use Named, Describable, Documentable, Taggable, Secured;
+    use Named, Describable, Documentable, Taggable, Secured, Parametrised;
 
     public function __construct(string $name, bool $deprecated = false)
     {
         $this->setName($name);
         $this->deprecated = $deprecated;
+    }
+
+    public function hasOperationId(): bool
+    {
+        return $this->id !== null;
+    }
+
+    public function getOperationId(): string
+    {
+        return $this->id;
+    }
+
+    public function setOperationId(string $id)
+    {
+        $this->id = $id;
     }
 
     public function isDeprecated(): bool
@@ -91,6 +108,24 @@ class Operation implements Component
     public function toArray(): array
     {
         $result = [];
+
+        if ($this->hasDescription()) {
+            $result['description'] = $this->getDescription();
+        }
+
+        if ($this->hasOperationId()) {
+            $result['operationId'] = $this->getOperationId();
+        }
+
+        if ($this->hasSummary()) {
+            $result['summary'] = $this->getSummary();
+        }
+
+        if ($this->hasParameters()) {
+            foreach ($this->getParameters() as $parameter) {
+                $result['parameters'][] = $parameter->toArray();
+            }
+        }
         foreach ($this->getResponses() as $status => $response) {
             $result['responses'][$status] = $response->toArray();
         }

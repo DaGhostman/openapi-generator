@@ -86,9 +86,12 @@ class Info implements Serializable
     {
         $result = [
             'title' => $this->getTitle(),
-            'description' => $this->getDescription(),
             'version' => $this->getVersion()
         ];
+
+        if ($this->hasDescription()) {
+            $result['description'] = $this->getDescription();
+        }
 
         if ($this->hasTermsUrl()) {
             $result['termsOfService'] = $this->getTermsUrl();
