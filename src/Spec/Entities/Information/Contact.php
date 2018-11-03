@@ -42,10 +42,11 @@ class Contact implements Component
     }
     public function toArray(): array
     {
-        $result = [
-            'name' => $this->getName()
-        ];
+        $result = [];
 
+        if ($this->hasName()) {
+            $result['name'] = $this->getName();
+        }
         if ($this->hasEmail()) {
             $result['email'] = $this->getEmail();
         }

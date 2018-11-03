@@ -22,7 +22,7 @@ class License implements Component
 
     public function hasUrl(): bool
     {
-        return $this->url !== null;
+        return $this->url !== null && $this->url !== '';
     }
 
     public function getUrl(): string
