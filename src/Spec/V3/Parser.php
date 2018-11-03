@@ -3,17 +3,24 @@ namespace OpenAPI\Spec\V3;
 
 use OpenAPI\Interfaces\ParserInterface;
 use OpenAPI\Interfaces\ReaderInterface;
-use OpenAPI\Spec\Entities\Document;
-use OpenAPI\Spec\Entities\Info;
-use OpenAPI\Spec\Entities\Information\License;
-use OpenAPI\Spec\Entities\Information\Contact;
-use OpenAPI\Spec\Entities\Path;
-use OpenAPI\Spec\Entities\Components\Param;
+use OpenAPI\Spec\Entities\Components\Example;
+use OpenAPI\Spec\Entities\Components\Header;
+use OpenAPI\Spec\Entities\Components\MediaType;
 use OpenAPI\Spec\Entities\Components\Operation;
+use OpenAPI\Spec\Entities\Components\Param;
+use OpenAPI\Spec\Entities\Components\Property;
 use OpenAPI\Spec\Entities\Components\ReferenceObject;
 use OpenAPI\Spec\Entities\Components\Response;
-use OpenAPI\Spec\Entities\Components\MediaType;
 use OpenAPI\Spec\Entities\Components\Schema;
+use OpenAPI\Spec\Entities\Document;
+use OpenAPI\Spec\Entities\Info;
+use OpenAPI\Spec\Entities\Information\Contact;
+use OpenAPI\Spec\Entities\Information\License;
+use OpenAPI\Spec\Entities\Path;
+use OpenAPI\Spec\Entities\Server;
+use OpenAPI\Spec\Entities\ServerVariable;
+use OpenAPI\Spec\Entities\Tag;
+use OpenAPI\Spec\Entities\Components\ExternalDoc;
 
 class Parser implements ParserInterface
 {
@@ -33,12 +40,34 @@ class Parser implements ParserInterface
             $this->handleInfo($raw['info'])
         );
 
+        if (isset($raw['security'])) {
+            foreach ($raw['security'] as $scheme => $value) {
+                $document->addSecurity($scheme, $value);
+            }
+        }
+
         foreach ($raw['components']['schemas'] ?? [] as $name => $schema) {
             $document->addComponent($this->handleSchema($name, $schema));
         }
 
+        foreach ($raw['servers'] ?? [] as $server) {
+            $document->addServer($this->handleServer($server));
+        }
+
         foreach ($raw['paths'] ?? [] as $uri => $path) {
            $document->addPath($this->handlePath($document, $uri, $path));
+        }
+
+        foreach ($raw['tags'] ?? [] as $tag) {
+            $t = new Tag($tag['name']);
+            $t->setDescription($tag['description'] ?? '');
+            if (isset($tag['externalDocs'])) {
+                $doc = new ExternalDoc($tag['externalDocs']['url']);
+                $doc->setDescription($tag['externalDocs'][''] ?? '');
+                $t->setExternalDoc($doc);
+            }
+
+            $document->addTag($t);
         }
 
         return $document;
@@ -107,10 +136,20 @@ class Parser implements ParserInterface
     private function handleSchema(string $name, array $schema)
     {
         $object = new Schema($name);
-        $object->setType($schema['type']);
-        foreach ($schema['properties'] as $property) {
-            $object->addProperty($this->handleProperty($property));
+        $object->setType($schema['type'] ?? (isset($schema['properties']) ? 'object' : ''));
+        foreach ($schema['properties'] ?? [] as $name => $property) {
+            $object->addProperty($this->handleProperty($name, $property));
         }
+
+        if (isset($schema['items'])) {
+            $object->setFormat($schema['items']['type'] ?? $schema['items']['$ref']);
+        }
+
+        if (isset($schema['required'])) {
+            $object->setRequired($schema['required']);
+        }
+
+        return $object;
     }
 
     private function handlePath(Document $document, string $uri, array $path)
@@ -132,22 +171,47 @@ class Parser implements ParserInterface
             }
         }
 
-        foreach ($path as $key => $value) {
-            if (!in_array($key, self::HTTP_METHODS)) {
+        foreach ($path as $key => $operation) {
+            if (!in_array(strtoupper($key), self::HTTP_METHODS)) {
                 continue;
             }
 
             $object->addOperation(
-                $this->handleOperation($document, $key, $operation)
+                $this->handleOperation($key, $operation)
             );
         }
 
         return $object;
     }
 
-    private function handleOperation(Document $document, string $method, array $operation)
+    private function handleOperation(string $method, array $operation)
     {
         $object = new Operation($method, $operation['deprecated'] ?? false);
+        if (isset($operation['operationId'])) {
+            $object->setOperationId($operation['operationId']);
+        }
+
+        if (isset($operation['summary'])) {
+            $object->setSummary($operation['summary']);
+        }
+
+        if (isset($operation['description'])) {
+            $object->setDescription($operation['description']);
+        }
+
+        if (isset($operation['tags'])) {
+            foreach ($operation['tags'] as $tag) {
+                $object->addTag($tag);
+            }
+        }
+
+        if (isset($operation['parameters'])) {
+            foreach ($operation['parameters'] as $param) {
+                $object->addParameter(
+                    $this->handleParam($param)
+                );
+            }
+        }
 
         foreach ($operation['responses'] as $status => $response) {
             if (isset($response['$ref'])) {
@@ -155,7 +219,7 @@ class Parser implements ParserInterface
             }
 
             if (!isset($response['$ref'])) {
-                $r = new Response($status);
+                $r = new Response("{$status}");
                 if (isset($response['description'])) {
                     $r->setDescription($response['description']);
                 }
@@ -164,17 +228,27 @@ class Parser implements ParserInterface
                     $r->setSummary($response['summary']);
                 }
 
-                foreach ($response['content'] as $type => $body) {
+                if (isset($response['headers'])) {
+                    foreach ($response['headers'] as $name => $header) {
+                        $h = new Header($name);
+                        $h->setDescription($header['description'] ?? '');
+                        $h->setType($header['schema']['type'] ?? '');
+                        $h->setFormat($header['schema']['format'] ?? '');
+                        $r->addHeader($h);
+                    }
+                }
+
+                foreach ($response['content'] ?? [] as $type => $body) {
                     $r->addContent(
                         $type,
                         new MediaType(
-                            new ReferenceObject($body['$ref'])
+                            new ReferenceObject($body['schema']['$ref'] ?? $body['$ref'])
                         )
                     );
                 }
             }
 
-            $object->addResponse($status, $r);
+            $object->addResponse("{$status}", $r);
         }
 
         return $object;
@@ -185,22 +259,78 @@ class Parser implements ParserInterface
         $param = new Param(
             $parameter['name'],
             $parameter['allowEmptyValue'] ?? false,
-            $parameter['required'] ?? false
+            $parameter['deprecated'] ?? false
         );
 
-        $param->setType($parameter['type']);
-        $param->setPlace($parameter['in']);
-        if (isset($parameter['deprecated'])) {
-            $param->setDeprecated($parameter['deprecated']);
-        }
-        if (isset($parameter['summary'])) {
-            $param->setSummary($parameter['summary']);
-        }
-        $param->setFormat($parameter['format'] ?? '');
-        if (isset($parameter['description'])) {
-            $param->setDescription($parameter['description']);
+        $param->setRequired($parameter['required'] ?? false);
+
+        if (isset($parameter['schema']['type'])) {
+            $param->setType($parameter['schema']['type']);
         }
 
+        if (isset($parameter['schema']['format'])) {
+            $param->setFormat($parameter['schema']['format']);
+        }
+
+        $param->setPlace($parameter['in']);
+        $param->setDeprecated($parameter['deprecated'] ?? false);
+        $param->setSummary($parameter['summary'] ?? '');
+        $param->setDescription($parameter['description'] ?? '');
+
         return $param;
+    }
+
+    private function handleProperty($name, $property)
+    {
+        $prop = new Property($name, $property['type'], $property['format'] ?? '');
+        if ($prop->getType() === 'array') {
+            $prop->setFormat($property['items']['type']);
+        }
+
+        if (isset($property['example'])) {
+            $prop->addExample(new Example($property['example']));
+        }
+
+        if (isset($property['enum'])) {
+            $prop->setValues($property['enum']);
+        }
+
+        return $prop;
+    }
+
+    private function handleServer($server)
+    {
+        $srv = new Server($server['url']);
+        if (isset($server['description'])) {
+            $srv->setDescription($server['description']);
+        }
+
+        if (isset($server['variables'])) {
+            foreach ($server['variables'] as $name => $var) {
+                $srv->addVariable($name, $this->handleServerVariable($var));
+            }
+        }
+
+        return $srv;
+    }
+
+    private function handleServerVariable(array $variable)
+    {
+        $var = new ServerVariable($variable['default'] ?? null);
+
+        if (isset($variable['enum'])) {
+            $var->setEnum($variable['enum']);
+        }
+
+        if (isset($variable['description'])) {
+            $var->setDescription($variable['description']);
+        }
+
+        return $var;
+    }
+
+    private function handleResponse(string $name, array $response)
+    {
+        $resp = '';
     }
 }
