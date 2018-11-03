@@ -1,4 +1,7 @@
 <?php
+
+use OpenAPI\Spec\V3\Parser;
+use OpenAPI\Readers\JsonReader;
 require_once __DIR__ . '/vendor/autoload.php';
 
 $info = new \OpenAPI\Spec\Entities\Info();
@@ -6,6 +9,11 @@ $document = new \OpenAPI\Spec\Entities\Document($info);
 
 if (file_exists(getcwd() . '/openapi.document.php')) {
     include getcwd() . '/openapi.document.php';
+}
+
+if (file_exists(__DIR__ . '/swagger.json')) {
+    $parser = new Parser(new JsonReader());
+    $document = $parser->parse(__DIR__ . '/swagger.json');
 }
 
 if (file_exists(getcwd() . '/composer.json')) {
