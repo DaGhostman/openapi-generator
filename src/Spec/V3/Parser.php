@@ -101,15 +101,30 @@ class Parser implements ParserInterface
             $object->setDescription($info['description']);
         }
 
+        if (isset($info['contact'])) {
+            $contact = new Contact();
+            if (isset($info['contact']['name'])) {
+                $contact->setName($info['contact']['name']);
+            }
+
+            if (isset($info['contact']['email'])) {
+                $contact->setEmail($info['contact']['email']);
+            }
+
+            if (isset($info['contact']['url'])) {
+                $contact->setUrl($info['contact']['url']);
+            }
+
+            $object->setContact($contact);
+        }
+
         return $object;
     }
 
     private function handleLicense(array $license): License
     {
         $object = new License($license['name']);
-        if (isset($license['url'])) {
-            $object->setUrl($license['url']);
-        }
+        $object->setUrl($license['url'] ?? '');
 
         return $object;
     }
