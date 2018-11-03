@@ -29,12 +29,6 @@ class Serializer
             'info' => $this->document->getInfo()->toArray(),
         ];
 
-        foreach ($this->document->getComponents() as $type => $components) {
-            foreach ($components as $name => $component) {
-                $result['components'][$type][$name] = $component->toArray();
-            }
-        }
-
         foreach ($this->document->getServers() as $server) {
             /** @var Server $server */
             $serv = [
@@ -52,15 +46,26 @@ class Serializer
             $result['servers'][] = $serv;
         }
 
-        foreach ($this->document->getTags() as $tag) {
-            /** @var Tag $tag */
-            $result['tags'][] = $tag->toArray();
-        }
 
         foreach ($this->document->getPaths() as $name => $path) {
             /** @var Path $path */
             $result['paths'][$name] = $path->toArray();
 
+        }
+
+        foreach ($this->document->getComponents() as $type => $components) {
+            foreach ($components as $name => $component) {
+                $result['components'][$type][$name] = $component->toArray();
+            }
+        }
+
+        if ($this->document->hasSecurity()) {
+            $result['security'] = $this->getScurity();
+        }
+
+        foreach ($this->document->getTags() as $tag) {
+            /** @var Tag $tag */
+            $result['tags'][] = $tag->toArray();
         }
 
         if ($this->document->hasExternalDoc()) {
