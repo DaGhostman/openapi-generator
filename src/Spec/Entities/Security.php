@@ -13,6 +13,7 @@ class Security implements Component
     private $place = 'apiKey';
     private $scheme = 'http';
     private $bearerFormat;
+    private $openIdConnectUrl;
 
     use Named, Typed, Describable;
 
@@ -38,12 +39,27 @@ class Security implements Component
 
     public function hasBearerFormat(): bool
     {
-        return $this->bearerFormat !== null;
+        return $this->bearerFormat !== null && $this->bearerFormat !== '';
     }
 
     public function getBearerFormat(): string
     {
         return $this->bearerFormat;
+    }
+
+    public function setOpenIdConnectUrl(string $url)
+    {
+        $this->openIdConnectUrl = $url;
+    }
+
+    public function hasOpenIdConnectUrl(): bool
+    {
+        return $this->openIdConnectUrl !== null;
+    }
+
+    public function getOpenIdConnectUrl(): string
+    {
+        return $this->openIdConnectUrl;
     }
 
     public function setScheme(string $scheme)
@@ -73,6 +89,10 @@ class Security implements Component
             if ($this->hasBearerFormat()) {
                 $response['bearerFormat'] = $this->getBearerFormat();
             }
+        }
+
+        if ($this->getType() === 'openIdConnect' && $this->hasOpenIdConnectUrl()) {
+            $response['openIdConnectUrl'] = $this->getOpenIdConnectUrl();
         }
 
         if ($this->hasDescription()) {
