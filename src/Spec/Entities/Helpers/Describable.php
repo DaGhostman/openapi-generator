@@ -26,7 +26,7 @@ trait Describable
 
     public function hasDescription(): bool
     {
-        return $this->description !== null;
+        return $this->description !== null && $this->description !== '';
     }
 
     public function getSummary(): string
