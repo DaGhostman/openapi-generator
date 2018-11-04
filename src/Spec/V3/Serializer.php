@@ -60,7 +60,7 @@ class Serializer
         }
 
         if ($this->document->hasSecurity()) {
-            $result['security'] = $this->getScurity();
+            $result['security'] = [$this->document->getSecurity()];
         }
 
         foreach ($this->document->getTags() as $tag) {
