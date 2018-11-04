@@ -21,6 +21,7 @@ use OpenAPI\Spec\Entities\Server;
 use OpenAPI\Spec\Entities\ServerVariable;
 use OpenAPI\Spec\Entities\Tag;
 use OpenAPI\Spec\Entities\Components\ExternalDoc;
+use OpenAPI\Spec\Entities\Security;
 
 class Parser implements ParserInterface
 {
@@ -42,12 +43,26 @@ class Parser implements ParserInterface
 
         if (isset($raw['security'])) {
             foreach ($raw['security'] as $scheme => $value) {
-                $document->addSecurity($scheme, $value);
+                foreach ($value as $k => $v) {
+                    $document->addSecurity($k, $v);
+                }
             }
         }
 
         foreach ($raw['components']['schemas'] ?? [] as $name => $schema) {
             $document->addComponent($this->handleSchema($name, $schema));
+        }
+
+        foreach ($raw['components']['securitySchemes'] ?? [] as $name => $schema) {
+            $security = new Security($name);
+            $security->setType($schema['type']);
+            $security->setBearerFormat($schema['bearerFormat'] ?? '');
+            $security->setOpenIdConnectUrl($schema['openIdConnectUrl'] ?? '');
+            $security->setPlace($schema['in'] ?? '');
+            $security->setScheme($schema['scheme'] ?? '');
+            $security->setDescription($schema['description'] ?? '');
+
+            $document->addComponent($security);
         }
 
         foreach ($raw['servers'] ?? [] as $server) {
@@ -68,6 +83,12 @@ class Parser implements ParserInterface
             }
 
             $document->addTag($t);
+        }
+
+        if(isset($raw['externalDocs'])) {
+            $docs = new ExternalDoc($raw['externalDocs']['url']);
+            $docs->setDescription($raw['externalDocs']['description'] ?? '');
+            $document->setExternalDoc($docs);
         }
 
         return $document;
