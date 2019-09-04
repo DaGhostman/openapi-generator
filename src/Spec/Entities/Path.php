@@ -28,7 +28,7 @@ class Path implements Component
         return (array) $this->operations;
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         $result = [];
         if ($this->hasSummary()) {
@@ -39,13 +39,12 @@ class Path implements Component
             $result['description'] = $this->getDescription();
         }
 
-
-        foreach ($this->getParameters() as $parameter) {
-            $result['parameters'][] = $parameter->toArray();
+        if ($this->hasParameters()) {
+            $result['parameters'] = $this->getParameters();
         }
 
         foreach ($this->getOperations() as $name => $operation) {
-            $result[$name] = $operation->toArray();
+            $result[$name] = $operation;
         }
         return $result;
     }

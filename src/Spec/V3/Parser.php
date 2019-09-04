@@ -4,6 +4,7 @@ namespace OpenAPI\Spec\V3;
 use OpenAPI\Interfaces\ParserInterface;
 use OpenAPI\Interfaces\ReaderInterface;
 use OpenAPI\Spec\Entities\Components\Example;
+use OpenAPI\Spec\Entities\Components\ExternalDoc;
 use OpenAPI\Spec\Entities\Components\Header;
 use OpenAPI\Spec\Entities\Components\MediaType;
 use OpenAPI\Spec\Entities\Components\Operation;
@@ -17,11 +18,10 @@ use OpenAPI\Spec\Entities\Info;
 use OpenAPI\Spec\Entities\Information\Contact;
 use OpenAPI\Spec\Entities\Information\License;
 use OpenAPI\Spec\Entities\Path;
+use OpenAPI\Spec\Entities\Security;
 use OpenAPI\Spec\Entities\Server;
 use OpenAPI\Spec\Entities\ServerVariable;
 use OpenAPI\Spec\Entities\Tag;
-use OpenAPI\Spec\Entities\Components\ExternalDoc;
-use OpenAPI\Spec\Entities\Security;
 
 class Parser implements ParserInterface
 {
@@ -249,7 +249,7 @@ class Parser implements ParserInterface
             }
         }
 
-        foreach ($operation['responses'] as $status => $response) {
+        foreach ($operation['responses'] ?? [] as $status => $response) {
             if (isset($response['$ref'])) {
                 $r = new ReferenceObject($response['$ref']);
             }

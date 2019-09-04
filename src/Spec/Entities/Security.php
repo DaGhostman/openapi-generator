@@ -72,7 +72,7 @@ class Security implements Component
         return $this->scheme;
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         $response = [
             'type' => $this->getType(),

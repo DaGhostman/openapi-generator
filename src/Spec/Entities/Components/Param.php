@@ -66,7 +66,7 @@ class Param implements Component
         return $this;
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         $result = [
             'name' => $this->getName(),

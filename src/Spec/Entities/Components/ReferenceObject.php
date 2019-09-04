@@ -16,7 +16,7 @@ class ReferenceObject implements Component
         return (string) $this->ref;
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         return [
             '$ref' => $this->getRef()

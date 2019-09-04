@@ -21,7 +21,7 @@ class Tag implements Component
         return (string) $this->name;
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         $result = [
             'name' => $this->getName()
@@ -32,7 +32,7 @@ class Tag implements Component
         }
 
         if ($this->hasExternalDoc()) {
-            $result['externalDocs'] = $this->getExternalDoc()->toArray();
+            $result['externalDocs'] = $this->getExternalDoc();
         }
 
         return $result;

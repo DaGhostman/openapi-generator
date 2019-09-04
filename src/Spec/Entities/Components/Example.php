@@ -30,7 +30,7 @@ class Example implements Component
         return $this->externalValue !== null;
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         $result = [];
         if ($this->hasSummary()) {

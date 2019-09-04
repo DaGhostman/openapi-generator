@@ -12,12 +12,12 @@ namespace OpenAPI\Spec\Entities\Components;
 use OpenAPI\Spec\Entities\Helpers\Describable;
 use OpenAPI\Spec\Entities\Helpers\Documentable;
 use OpenAPI\Spec\Entities\Helpers\Named;
+use OpenAPI\Spec\Entities\Helpers\Parametrised;
+use OpenAPI\Spec\Entities\Helpers\Secured;
 use OpenAPI\Spec\Entities\Helpers\Taggable;
 use OpenAPI\Spec\Entities\Security;
 use OpenAPI\Spec\Entities\Server;
 use OpenAPI\Spec\Interfaces\Component;
-use OpenAPI\Spec\Entities\Helpers\Secured;
-use OpenAPI\Spec\Entities\Helpers\Parametrised;
 
 class Operation implements Component
 {
@@ -105,7 +105,7 @@ class Operation implements Component
         return $this->requestBody;
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         $result = [];
 
@@ -123,15 +123,15 @@ class Operation implements Component
 
         if ($this->hasParameters()) {
             foreach ($this->getParameters() as $parameter) {
-                $result['parameters'][] = $parameter->toArray();
+                $result['parameters'][] = $parameter;
             }
         }
         foreach ($this->getResponses() as $status => $response) {
-            $result['responses'][$status] = $response->toArray();
+            $result['responses'][$status] = $response;
         }
 
         if ($this->hasRequestBody()) {
-            $result['requestBody'] = $this->getRequestBody()->toArray();
+            $result['requestBody'] = $this->getRequestBody();
         }
 
         if ($this->hasSecurity()) {

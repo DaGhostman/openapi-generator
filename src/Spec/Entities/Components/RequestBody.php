@@ -35,13 +35,13 @@ class RequestBody implements Component
         $this->content[$name] = $type;
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         $response = [
             'content' => [],
         ];
         foreach ($this->content as $mime => $content) {
-            $response['content'][$mime] = $content->toArray();
+            $response['content'][$mime] = $content;
         }
 
         return $response;

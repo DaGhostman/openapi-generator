@@ -1,7 +1,9 @@
 <?php declare(strict_types=1);
 namespace OpenAPI\Spec\Interfaces;
 
-interface Component
+use JsonSerializable;
+
+interface Component extends JsonSerializable
 {
 
 }

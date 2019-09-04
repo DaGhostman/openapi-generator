@@ -30,7 +30,7 @@ class License implements Component
         return $this->url;
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         $result = [
             'name' => $this->getName()

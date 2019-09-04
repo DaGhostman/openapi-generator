@@ -38,7 +38,7 @@ class Property implements Component
         return !empty($this->examples);
     }
 
-    public function setValues(string $values)
+    public function setValues(array $values)
     {
         $this->values = $values;
     }
@@ -53,7 +53,7 @@ class Property implements Component
         return !empty($this->values);
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         $result = [
             'type' => $this->getType(),
@@ -61,11 +61,13 @@ class Property implements Component
 
         if ($this->getType() === 'array') {
             $result['items'] = [
-                strpos($this->getFormat(), '#') === 0 ? '$ref' : 'type' => $this->getFormat()
+                (stripos($this->getFormat(), '#') === 0 ? '$ref' : 'type') => $this->getFormat()
             ];
         } else {
             if ($this->hasFormat()) {
-                $result['format'] = $this->getFormat();
+                return [
+                    (stripos($this->getFormat(), '#') === 0 ? '$ref' : 'format') => $this->getFormat()
+                ];
             }
         }
 

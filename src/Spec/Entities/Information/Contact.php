@@ -40,7 +40,7 @@ class Contact implements Component
     {
         return $this->url;
     }
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         $result = [];
 

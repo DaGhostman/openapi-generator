@@ -1,15 +1,8 @@
 <?php declare(strict_types=1);
 namespace OpenAPI\Spec\V3;
 
-use OpenAPI\Spec\Entities\Components\MediaType;
-use OpenAPI\Spec\Entities\Components\Operation;
-use OpenAPI\Spec\Entities\Components\Property;
-use OpenAPI\Spec\Entities\Components\Response;
-use OpenAPI\Spec\Entities\Components\Schema;
 use OpenAPI\Spec\Entities\Document;
-use OpenAPI\Spec\Entities\Param;
 use OpenAPI\Spec\Entities\Path;
-use OpenAPI\Spec\Entities\Server;
 use OpenAPI\Spec\Entities\Tag;
 
 class Serializer
@@ -21,41 +14,26 @@ class Serializer
         $this->document = $document;
     }
 
-    public function serialize(): array
+    public function serialize(): string
     {
-        $info = $this->document->getInfo();
         $result = [
             'openapi' => '3.0.0',
-            'info' => $this->document->getInfo()->toArray(),
+            'info' => $this->document->getInfo(),
         ];
 
-        foreach ($this->document->getServers() as $server) {
-            /** @var Server $server */
-            $serv = [
-                'url' => $server->getUrl()
-            ];
-
-            if ($server->hasDescription()) {
-                $serv['description'] = $server->getDescription();
-            }
-
-            if (!empty($server->getVariables())) {
-                $serv['variables'] = $server->getVariables();
-            }
-
-            $result['servers'][] = $serv;
+        if ($this->document->getServers() !== []) {
+            $result['servers'] = $this->document->getServers();
         }
-
 
         foreach ($this->document->getPaths() as $name => $path) {
             /** @var Path $path */
-            $result['paths'][$name] = $path->toArray();
+            $result['paths'][$name] = $path;
 
         }
 
         foreach ($this->document->getComponents() as $type => $components) {
             foreach ($components as $name => $component) {
-                $result['components'][$type][$name] = $component->toArray();
+                $result['components'][$type][$name] = $component;
             }
         }
 
@@ -65,13 +43,13 @@ class Serializer
 
         foreach ($this->document->getTags() as $tag) {
             /** @var Tag $tag */
-            $result['tags'][] = $tag->toArray();
+            $result['tags'][] = $tag;
         }
 
         if ($this->document->hasExternalDoc()) {
-            $result['externalDocs'] = $this->document->getExternalDoc()->toArray();
+            $result['externalDocs'] = $this->document->getExternalDoc();
         }
 
-        return $result;
+        return json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 }

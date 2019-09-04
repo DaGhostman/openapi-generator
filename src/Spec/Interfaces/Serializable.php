@@ -1,7 +1,9 @@
 <?php declare(strict_types=1);
 namespace OpenAPI\Spec\Interfaces;
 
-interface Serializable
+use JsonSerializable;
+
+interface Serializable extends JsonSerializable
 {
-    public function toArray(): array;
+
 }

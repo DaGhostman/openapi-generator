@@ -82,7 +82,7 @@ class Info implements Serializable
         return $this->license;
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         $result = [
             'title' => $this->getTitle(),
@@ -98,11 +98,11 @@ class Info implements Serializable
         }
 
         if ($this->hasContact()) {
-            $result['contact'] = $this->contact->toArray();
+            $result['contact'] = $this->contact;
         }
 
         if ($this->hasLicense()) {
-            $result['license'] = $this->license->toArray();
+            $result['license'] = $this->license;
         }
 
         return $result;

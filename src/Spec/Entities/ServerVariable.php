@@ -1,16 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: dagho
- * Date: 8/11/2017
- * Time: 8:14 PM
- */
-
 namespace OpenAPI\Spec\Entities;
 
+use JsonSerializable;
 use OpenAPI\Spec\Entities\Helpers\Describable;
 
-class ServerVariable
+class ServerVariable implements JsonSerializable
 {
     private $default;
     /**
@@ -38,5 +32,16 @@ class ServerVariable
     public function addEnum(string $value)
     {
         $this->enum[] = $value;
+    }
+
+    public function jsonSerialize()
+    {
+        $result = ['default' => $this->default];
+
+        if ($this->enum !== []) {
+            $result['enum'] = $this->enum;
+        }
+
+        return $result;
     }
 }

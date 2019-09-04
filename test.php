@@ -44,59 +44,10 @@ $document->addComponent($notFoundSchema);
 
 foreach ($routes as $route) {
     $path = new \OpenAPI\Spec\Entities\Path($route['pattern']);
-    $path->setSummary($route['api']['summary']);
-    $path->setDescription($route['api']['description']);
-
-    if (isset($route['api']['tags'])) {
-        foreach ($route['api']['tags'] as $tag => $description) {
-            $t = new \OpenAPI\Spec\Entities\Tag($tag);
-            $t->setDescription($description);
-
-            $document->addTag($t);
-        }
-    }
 
     foreach ($route['methods'] as $method) {
         // @todo: Make HTTP request to the endpoint
-        $operation = new \OpenAPI\Spec\Entities\Components\Operation(strtolower($method), $route['deprecated']);
-        $response = new \OpenAPI\Spec\Entities\Components\Response('200');
-
-        if (isset($route['api']['methods'][$method]['tags'])) {
-            foreach ($route['api']['methods'][$method]['tags'] as $tag) {
-                $operation->addTag($tag);
-            }
-        }
-
-        $body = new \OpenAPI\Spec\Entities\Components\MediaType(
-            new \OpenAPI\Spec\Entities\Components\ReferenceObject(
-                '#/components/schemas/' . $route['api']['methods'][$method]['schema']
-            )
-        );
-
-        $response->addContent('application/json', $body);
-        $response->setDescription($route['api']['methods'][$method]['description']);
-        if (isset($route['api']['methods'][$method]['headers'])) {
-            foreach ($route['api']['methods'][$method]['headers'] as $name => $details) {
-                $header = new \OpenAPI\Spec\Entities\Components\Header($name);
-                $header->setDescription($details['description']);
-                $header->setType($details['type']);
-                $header->setFormat(($details['type'] === 'integer') ? 'int64' : '');
-
-                $response->addHeader($header);
-            }
-        }
-
-        $operation->addResponse('200', $response);
-
-        if ($document->hasResponse('NotFound')) {
-            $response = new \OpenAPI\Spec\Entities\Components\Response('NotFound');
-            $operation->addResponse(404, new \OpenAPI\Spec\Entities\Components\ReferenceObject('#/components/responses/NotFound'));
-        }
-
-        if (in_array($method, ['POST', 'PUT']) && $document->hasResponse('Created')) {
-            $response = new \OpenAPI\Spec\Entities\Components\Response('Created');
-            $operation->addResponse(201, new \OpenAPI\Spec\Entities\Components\ReferenceObject('#/components/responses/Created'));
-        }
+        $operation = new \OpenAPI\Spec\Entities\Components\Operation(strtolower($method), $route['deprecated'] ?? false);
 
         $path->addOperation($operation);
     }
@@ -106,4 +57,4 @@ foreach ($routes as $route) {
 
 $generator = new \OpenAPI\Spec\V3\Serializer($document);
 
-var_dump(json_encode($generator->serialize(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+file_put_contents(__DIR__ . '/swagger.json', $generator->serialize());

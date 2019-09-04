@@ -9,9 +9,9 @@ class Header extends Param
         $this->setRequired(false);
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
-        $result = parent::toArray();
+        $result = parent::jsonSerialize();
         $result['schema']['type'] = $this->getType();
         if ($this->hasFormat()) {
             $result['format'] = $this->getFormat();

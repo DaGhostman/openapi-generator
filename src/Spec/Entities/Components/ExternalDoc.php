@@ -22,7 +22,7 @@ class ExternalDoc implements Component
         $this->setName($url);
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         $result = [
             'url' => $this->name

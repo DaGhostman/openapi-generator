@@ -33,7 +33,7 @@ class MediaType implements Component
         return !empty($this->examples);
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         $result = [
             'schema' => [
@@ -43,7 +43,7 @@ class MediaType implements Component
 
         if ($this->hasExamples()) {
             foreach ($this->getExamples() as $name => $example) {
-                $result['examples'][$name] = $example->toArray();
+                $result['examples'][$name] = $example;
             }
         }
 

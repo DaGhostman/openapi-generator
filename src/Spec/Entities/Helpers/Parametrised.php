@@ -9,7 +9,7 @@ trait Parametrised
 
     public function addParameter(Param $param)
     {
-        $this->parameters[$param->getName() . ':' . $param->getPlace()] = $param;
+        $this->parameters[] = $param;
     }
 
     public function getParameters(): array

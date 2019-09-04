@@ -11,7 +11,4 @@ $serializer = new Serializer(
     $parser->parse(__DIR__ . '/swagger.json')
 );
 
-file_put_contents(__DIR__ . '/temp.json', json_encode(
-    $serializer->serialize(),
-    JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT
-));
+file_put_contents(__DIR__ . '/temp.json', $serializer->serialize());

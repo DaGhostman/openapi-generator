@@ -57,7 +57,7 @@ class Response implements Component
         return $this->links;
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         $result = [
             'description' => $this->getDescription()
@@ -66,7 +66,7 @@ class Response implements Component
         if ($this->hasHeaders()) {
             foreach ($this->getHeaders() as $name => $header) {
                 /** @var Header|ReferenceObject $header */
-                $result['headers'][$name] = array_filter($header->toArray(), function ($key) {
+                $result['headers'][$name] = array_filter($header->jsonSerialize(), function ($key) {
                     if (!in_array($key, ['schema', 'description'])) {
                         return false;
                     }
@@ -79,7 +79,7 @@ class Response implements Component
         if ($this->hasContent()) {
             foreach ($this->getContent() as $type => $content) {
                 /** @var MediaType $content */
-                $result['content'][$type] = $content->toArray();
+                $result['content'][$type] = $content;
             }
         }
 

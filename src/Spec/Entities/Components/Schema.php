@@ -51,7 +51,7 @@ class Schema implements Component
         return $this->required;
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         $result = [
             'type' => $this->getType(),
@@ -70,7 +70,7 @@ class Schema implements Component
 
         foreach ($this->getProperties() as $property) {
             /** @var Property $property */
-            $result['properties'][$property->getName()] = $property->toArray();
+            $result['properties'][$property->getName()] = $property;
         }
 
         return $result;
