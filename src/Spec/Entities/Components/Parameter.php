@@ -1,12 +1,13 @@
 <?php declare(strict_types=1);
 namespace OpenAPI\Spec\Entities\Components;
 
+use Onion\Framework\Common\Hydrator\MethodHydrator;
 use OpenAPI\Spec\Entities\Helpers\Describable;
 use OpenAPI\Spec\Entities\Helpers\Formatted;
 use OpenAPI\Spec\Entities\Helpers\Named;
 use OpenAPI\Spec\Interfaces\Component;
 
-class Param implements Component
+class Parameter implements Component
 {
     private $required = true;
     private $place = 'url';
@@ -14,6 +15,7 @@ class Param implements Component
     private $allowEmpty;
 
     use Named, Formatted, Describable;
+    use MethodHydrator;
 
     public function __construct(string $name, bool $allowEmpty = false, bool $deprecated = false)
     {
@@ -60,7 +62,7 @@ class Param implements Component
         return $this->place;
     }
 
-    public function setPlace(string $place): Param
+    public function setPlace(string $place): Parameter
     {
         $this->place = $place;
         return $this;

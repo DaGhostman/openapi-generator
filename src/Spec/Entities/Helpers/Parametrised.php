@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 namespace OpenAPI\Spec\Entities\Helpers;
 
-use OpenAPI\Spec\Entities\Components\Param;
+use OpenAPI\Spec\Entities\Components\Parameter;
 
 trait Parametrised
 {
     private $parameters = [];
 
-    public function addParameter(Param $param)
+    public function addParameter(Parameter $param)
     {
         $this->parameters[] = $param;
     }

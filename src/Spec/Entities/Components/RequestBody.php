@@ -8,7 +8,7 @@
 
 namespace OpenAPI\Spec\Entities\Components;
 
-
+use Onion\Framework\Common\Hydrator\MethodHydrator;
 use OpenAPI\Spec\Entities\Helpers\Describable;
 use OpenAPI\Spec\Entities\Helpers\Named;
 use OpenAPI\Spec\Interfaces\Component;
@@ -19,6 +19,8 @@ class RequestBody implements Component
     private $content = [];
 
     use Named, Describable;
+    use MethodHydrator;
+
     public function __construct(string $name, bool $required = false)
     {
         $this->setName($name);

@@ -1,13 +1,16 @@
 <?php declare(strict_types=1);
 namespace OpenAPI\Spec\Entities\Information;
 
+use Onion\Framework\Common\Hydrator\MethodHydrator;
 use OpenAPI\Spec\Entities\Helpers\Named;
 use OpenAPI\Spec\Interfaces\Component;
 
 class Contact implements Component
 {
-    private $url;
-    private $email;
+    use MethodHydrator;
+
+    private $url = '';
+    private $email = '';
 
     use Named;
 

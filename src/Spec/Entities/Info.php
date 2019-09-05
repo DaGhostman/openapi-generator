@@ -1,21 +1,23 @@
 <?php declare(strict_types=1);
 namespace OpenAPI\Spec\Entities;
 
+use Onion\Framework\Common\Hydrator\MethodHydrator;
+use Onion\Framework\Hydrator\Interfaces\HydratableInterface;
 use OpenAPI\Spec\Entities\Helpers\Describable;
 use OpenAPI\Spec\Entities\Information\Contact;
 use OpenAPI\Spec\Entities\Information\License;
-use OpenAPI\Spec\Interfaces\Serializable;
 
-class Info implements Serializable
+class Info implements HydratableInterface
 {
     private $title;
     private $version;
-    private $termsUrl;
+    private $termsUrl = '';
 
     private $contact;
     private $license;
 
     use Describable;
+    use MethodHydrator;
 
     public function getTitle()
     {
@@ -37,17 +39,17 @@ class Info implements Serializable
         $this->version = $version;
     }
 
-    public function setTermsUrl(string $url)
+    public function setTermsOfService(string $url)
     {
         $this->termsUrl = $url;
     }
 
-    public function hasTermsUrl(): bool
+    public function hasTermsOfService(): bool
     {
         return $this->termsUrl !== null;
     }
 
-    public function getTermsUrl(): string
+    public function getTermsOfService(): string
     {
         return $this->termsUrl;
     }
@@ -62,7 +64,7 @@ class Info implements Serializable
         return $this->contact !== null;
     }
 
-    public function getContact(): Contact
+    public function getContact(): ?Contact
     {
         return $this->contact;
     }
@@ -77,34 +79,8 @@ class Info implements Serializable
         return $this->license !== null;
     }
 
-    public function getLicense(): License
+    public function getLicense(): ?License
     {
         return $this->license;
-    }
-
-    public function jsonSerialize(): array
-    {
-        $result = [
-            'title' => $this->getTitle(),
-            'version' => $this->getVersion()
-        ];
-
-        if ($this->hasDescription()) {
-            $result['description'] = $this->getDescription();
-        }
-
-        if ($this->hasTermsUrl()) {
-            $result['termsOfService'] = $this->getTermsUrl();
-        }
-
-        if ($this->hasContact()) {
-            $result['contact'] = $this->contact;
-        }
-
-        if ($this->hasLicense()) {
-            $result['license'] = $this->license;
-        }
-
-        return $result;
     }
 }

@@ -11,8 +11,8 @@ namespace OpenAPI\Spec\Entities\Helpers;
 
 trait Describable
 {
-    private $description;
-    private $summary;
+    private $description = '';
+    private $summary = '';
 
     public function getDescription(): string
     {

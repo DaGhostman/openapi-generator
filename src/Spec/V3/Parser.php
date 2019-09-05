@@ -8,7 +8,7 @@ use OpenAPI\Spec\Entities\Components\ExternalDoc;
 use OpenAPI\Spec\Entities\Components\Header;
 use OpenAPI\Spec\Entities\Components\MediaType;
 use OpenAPI\Spec\Entities\Components\Operation;
-use OpenAPI\Spec\Entities\Components\Param;
+use OpenAPI\Spec\Entities\Components\Parameter;
 use OpenAPI\Spec\Entities\Components\Property;
 use OpenAPI\Spec\Entities\Components\ReferenceObject;
 use OpenAPI\Spec\Entities\Components\Response;
@@ -290,9 +290,9 @@ class Parser implements ParserInterface
         return $object;
     }
 
-    private function handleParam(array $parameter): Param
+    private function handleParam(array $parameter): Parameter
     {
-        $param = new Param(
+        $param = new Parameter(
             $parameter['name'],
             $parameter['allowEmptyValue'] ?? false,
             $parameter['deprecated'] ?? false

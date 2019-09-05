@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 namespace OpenAPI\Spec\Entities;
 
+use Onion\Framework\Common\Hydrator\MethodHydrator;
 use OpenAPI\Spec\Entities\Components\Operation;
 use OpenAPI\Spec\Entities\Helpers\Describable;
 use OpenAPI\Spec\Entities\Helpers\Named;
@@ -12,6 +13,7 @@ class Path implements Component
     private $operations = [];
 
     use Named, Describable, Parametrised;
+    use MethodHydrator;
 
     public function __construct($path)
     {
@@ -26,26 +28,5 @@ class Path implements Component
     public function getOperations(): array
     {
         return (array) $this->operations;
-    }
-
-    public function jsonSerialize(): array
-    {
-        $result = [];
-        if ($this->hasSummary()) {
-            $result['summary'] = $this->getSummary();
-        }
-
-        if ($this->hasDescription()) {
-            $result['description'] = $this->getDescription();
-        }
-
-        if ($this->hasParameters()) {
-            $result['parameters'] = $this->getParameters();
-        }
-
-        foreach ($this->getOperations() as $name => $operation) {
-            $result[$name] = $operation;
-        }
-        return $result;
     }
 }

@@ -8,7 +8,7 @@
 
 namespace OpenAPI\Spec\Entities\Components;
 
-
+use Onion\Framework\Common\Hydrator\MethodHydrator;
 use OpenAPI\Spec\Entities\Helpers\Describable;
 use OpenAPI\Spec\Entities\Helpers\Named;
 use OpenAPI\Spec\Interfaces\Component;
@@ -16,6 +16,8 @@ use OpenAPI\Spec\Interfaces\Component;
 class ExternalDoc implements Component
 {
     use Named, Describable;
+
+    use MethodHydrator;
 
     public function __construct(string $url)
     {

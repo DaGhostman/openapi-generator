@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 namespace OpenAPI\Spec\Entities;
 
+use Onion\Framework\Common\Hydrator\MethodHydrator;
 use OpenAPI\Spec\Entities\Helpers\Describable;
 use OpenAPI\Spec\Entities\Helpers\Named;
 use OpenAPI\Spec\Entities\Helpers\Typed;
@@ -10,12 +11,13 @@ class Security implements Component
 {
     private $name;
     private $values;
-    private $place = 'apiKey';
-    private $scheme = 'http';
+    private $place;
+    private $scheme;
     private $bearerFormat;
     private $openIdConnectUrl;
 
     use Named, Typed, Describable;
+    use MethodHydrator;
 
     public function __construct(string $name = '')
     {
@@ -70,35 +72,5 @@ class Security implements Component
     public function getScheme(): string
     {
         return $this->scheme;
-    }
-
-    public function jsonSerialize(): array
-    {
-        $response = [
-            'type' => $this->getType(),
-        ];
-
-        if ($this->getType() === 'apiKey') {
-            $response['in'] = $this->getPlace();
-            $response['name'] = $this->getName();
-        }
-
-        if ($this->getType() === 'http') {
-            $response['scheme'] = $this->getScheme();
-
-            if ($this->hasBearerFormat()) {
-                $response['bearerFormat'] = $this->getBearerFormat();
-            }
-        }
-
-        if ($this->getType() === 'openIdConnect' && $this->hasOpenIdConnectUrl()) {
-            $response['openIdConnectUrl'] = $this->getOpenIdConnectUrl();
-        }
-
-        if ($this->hasDescription()) {
-            $response['description'] = $this->getDescription();
-        }
-
-        return $response;
     }
 }

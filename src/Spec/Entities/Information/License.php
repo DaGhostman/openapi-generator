@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 namespace OpenAPI\Spec\Entities\Information;
 
+use Onion\Framework\Common\Hydrator\MethodHydrator;
 use OpenAPI\Spec\Entities\Helpers\Named;
 use OpenAPI\Spec\Interfaces\Component;
 
@@ -9,6 +10,7 @@ class License implements Component
     private $url;
 
     use Named;
+    use MethodHydrator;
 
     public function __construct(string $name)
     {

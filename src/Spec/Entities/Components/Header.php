@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 namespace OpenAPI\Spec\Entities\Components;
 
-class Header extends Param
+class Header extends Parameter
 {
     public function __construct($name, $allowEmpty = false, $deprecated = false)
     {

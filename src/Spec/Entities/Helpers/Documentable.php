@@ -19,7 +19,7 @@ trait Documentable
         $this->externalDoc = $doc;
     }
 
-    public function getExternalDoc(): ExternalDoc
+    public function getExternalDoc(): ?ExternalDoc
     {
         return $this->externalDoc;
     }

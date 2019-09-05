@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 namespace OpenAPI\Spec\Entities;
 
-use OpenAPI\Spec\Entities\Components\Param;
+use OpenAPI\Spec\Entities\Components\Parameter;
 use OpenAPI\Spec\Entities\Components\Response;
 use OpenAPI\Spec\Entities\Components\Schema;
 use OpenAPI\Spec\Entities\Helpers\Documentable;
@@ -81,7 +81,7 @@ class Document
             $type = 'schemas';
         }
 
-        if ($component instanceof Param) {
+        if ($component instanceof Parameter) {
             $type = 'parameters';
         }
 

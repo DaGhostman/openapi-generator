@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 namespace OpenAPI\Spec\Entities\Components;
 
+use Onion\Framework\Common\Hydrator\MethodHydrator;
 use OpenAPI\Spec\Entities\Helpers\Describable;
 use OpenAPI\Spec\Interfaces\Component;
 
@@ -10,6 +11,7 @@ class Example implements Component
     private $externalValue;
 
     use Describable;
+    use MethodHydrator;
 
     public function __construct($value, bool $external = false)
     {

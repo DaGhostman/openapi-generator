@@ -1,15 +1,17 @@
 <?php declare(strict_types=1);
 namespace OpenAPI\Spec\Entities;
 
-use JsonSerializable;
+use Onion\Framework\Common\Hydrator\MethodHydrator;
+use Onion\Framework\Hydrator\Interfaces\HydratableInterface;
 use OpenAPI\Spec\Entities\Helpers\Describable;
 
-class Server implements JsonSerializable
+class Server implements HydratableInterface
 {
     private $url;
     private $variables = [];
 
     use Describable;
+    use MethodHydrator;
 
     public function __construct(string $url)
     {
@@ -21,6 +23,11 @@ class Server implements JsonSerializable
         return $this->variables;
     }
 
+    public function setVariables(array $variables)
+    {
+        $this->variables = $variables;
+    }
+
     public function addVariable(string $name, ServerVariable $value)
     {
         $this->variables[$name] = $value;
@@ -29,22 +36,5 @@ class Server implements JsonSerializable
     public function getUrl(): string
     {
         return (string) $this->url;
-    }
-
-    public function jsonSerialize()
-    {
-        $result = [
-            'url' => $this->getUrl(),
-        ];
-
-        if ($this->hasDescription()) {
-            $result['description'] = $this->getDescription();
-        }
-
-        if ($this->getVariables() !== []) {
-            $result['variables'] = $this->getVariables();
-        }
-
-        return $result;
     }
 }

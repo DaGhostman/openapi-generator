@@ -1,21 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: dagho
- * Date: 8/11/2017
- * Time: 8:58 PM
- */
-
 namespace OpenAPI\Spec\Entities\Components;
 
-
+use Onion\Framework\Common\Hydrator\MethodHydrator;
 use OpenAPI\Spec\Entities\Helpers\Describable;
 use OpenAPI\Spec\Entities\Helpers\Documentable;
 use OpenAPI\Spec\Entities\Helpers\Named;
 use OpenAPI\Spec\Entities\Helpers\Parametrised;
 use OpenAPI\Spec\Entities\Helpers\Secured;
 use OpenAPI\Spec\Entities\Helpers\Taggable;
-use OpenAPI\Spec\Entities\Security;
 use OpenAPI\Spec\Entities\Server;
 use OpenAPI\Spec\Interfaces\Component;
 
@@ -29,6 +21,7 @@ class Operation implements Component
     private $requestBody;
 
     use Named, Describable, Documentable, Taggable, Secured, Parametrised;
+    use MethodHydrator;
 
     public function __construct(string $name, bool $deprecated = false)
     {
@@ -41,7 +34,7 @@ class Operation implements Component
         return $this->id !== null;
     }
 
-    public function getOperationId(): string
+    public function getOperationId(): ?string
     {
         return $this->id;
     }
@@ -100,7 +93,7 @@ class Operation implements Component
         return $this->requestBody !== null;
     }
 
-    public function getRequestBody(): ReferenceObject
+    public function getRequestBody(): ?ReferenceObject
     {
         return $this->requestBody;
     }

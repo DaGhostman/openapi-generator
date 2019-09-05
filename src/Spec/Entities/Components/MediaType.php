@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 namespace OpenAPI\Spec\Entities\Components;
 
+use Onion\Framework\Common\Hydrator\MethodHydrator;
 use OpenAPI\Spec\Interfaces\Component;
 
 class MediaType implements Component
@@ -8,6 +9,8 @@ class MediaType implements Component
     private $encoding;
     private $examples = [];
     private $referenceObject;
+
+    use MethodHydrator;
 
     public function __construct(ReferenceObject $referenceObject)
     {
@@ -31,6 +34,11 @@ class MediaType implements Component
     public function hasExamples(): bool
     {
         return !empty($this->examples);
+    }
+
+    public function getReferenceObject(): ReferenceObject
+    {
+        return $this->referenceObject;
     }
 
     public function jsonSerialize(): array

@@ -9,7 +9,9 @@
     "docs": "http://example.com"
   },
   "require": {
-    "guzzlehttp/guzzle": "^6.0"
+    "guzzlehttp/guzzle": "^6.0",
+    "onion/common": "dev-master",
+    "onion/interfaces": "dev-master"
   },
   "autoload": {
     "psr-4": {

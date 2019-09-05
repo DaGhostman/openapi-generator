@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 namespace OpenAPI\Spec\Entities\Components;
 
+use Onion\Framework\Common\Hydrator\MethodHydrator;
 use OpenAPI\Spec\Entities\Helpers\Describable;
 use OpenAPI\Spec\Entities\Helpers\Named;
 use OpenAPI\Spec\Interfaces\Component;
@@ -12,6 +13,8 @@ class Response implements Component
     private $links = [];
 
     use Named, Describable;
+    use MethodHydrator;
+
     public function __construct(string $statusCode = '200')
     {
         $this->setName($statusCode);

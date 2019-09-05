@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 namespace OpenAPI\Spec\Entities\Components;
 
+use Onion\Framework\Common\Hydrator\MethodHydrator;
 use OpenAPI\Spec\Entities\Helpers\Formatted;
 use OpenAPI\Spec\Entities\Helpers\Named;
 use OpenAPI\Spec\Interfaces\Component;
@@ -11,6 +12,8 @@ class Property implements Component
     private $values = [];
 
     use Named, Formatted;
+
+    use MethodHydrator;
 
     public function __construct(string $name, string $type, string $format = '')
     {

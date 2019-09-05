@@ -1,4 +1,8 @@
 <?php
+
+use OpenAPI\Spec\Entities\Server;
+use OpenAPI\Spec\Entities\ServerVariable;
+
 require_once __DIR__ . '/vendor/autoload.php';
 
 $info = new \OpenAPI\Spec\Entities\Info();
@@ -6,6 +10,7 @@ $info->setTitle('Demo API');
 $info->setVersion('1.0.0');
 $info->setSummary('A demo API to be documented');
 $info->setDescription('A very cool api that totally needs to be documented for others');
+$info->setContact((new \OpenAPI\Spec\Entities\Information\Contact)->hydrate(['name' => 'me', 'url' => 'https://example.com']));
 $document = new \OpenAPI\Spec\Entities\Document($info);
 
 $routes = include_once __DIR__ . '/routes.demo.php';
@@ -41,6 +46,9 @@ $createdResponse->addHeader($linkHeader);
 $document->addComponent($response);
 $document->addComponent($createdResponse);
 $document->addComponent($notFoundSchema);
+$server = new Server('https://example.com');
+$server->addVariable('foo', new ServerVariable('bar'));
+$document->addServer($server);
 
 foreach ($routes as $route) {
     $path = new \OpenAPI\Spec\Entities\Path($route['pattern']);
@@ -48,6 +56,8 @@ foreach ($routes as $route) {
     foreach ($route['methods'] as $method) {
         // @todo: Make HTTP request to the endpoint
         $operation = new \OpenAPI\Spec\Entities\Components\Operation(strtolower($method), $route['deprecated'] ?? false);
+        $operation->addResponse('404', $response);
+        $operation->addResponse('201', $createdResponse);
 
         $path->addOperation($operation);
     }
@@ -55,6 +65,4 @@ foreach ($routes as $route) {
     $document->addPath($path);
 }
 
-$generator = new \OpenAPI\Spec\V3\Serializer($document);
-
-file_put_contents(__DIR__ . '/swagger.json', $generator->serialize());
+file_put_contents(__DIR__ . '/swagger.json', json_encode(\OpenAPI\Spec\V3\Serializer::serialize($document), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));

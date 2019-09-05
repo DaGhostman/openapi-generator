@@ -2,19 +2,19 @@
 namespace OpenAPI\Spec\Entities;
 
 use JsonSerializable;
+use Onion\Framework\Common\Hydrator\MethodHydrator;
+use Onion\Framework\Hydrator\Interfaces\HydratableInterface;
 use OpenAPI\Spec\Entities\Helpers\Describable;
 
-class ServerVariable implements JsonSerializable
+class ServerVariable implements HydratableInterface
 {
     private $default;
-    /**
-     * @var string[]
-     */
     private $enum = [];
 
     use Describable;
+    use MethodHydrator;
 
-    public function __construct(string $value)
+    public function __construct($value)
     {
         $this->default = $value;
     }
@@ -29,19 +29,13 @@ class ServerVariable implements JsonSerializable
         return $this->enum;
     }
 
-    public function addEnum(string $value)
+    public function getDefault()
     {
-        $this->enum[] = $value;
+        return $this->default;
     }
 
-    public function jsonSerialize()
+    public function addEnum($value)
     {
-        $result = ['default' => $this->default];
-
-        if ($this->enum !== []) {
-            $result['enum'] = $this->enum;
-        }
-
-        return $result;
+        $this->enum[] = $value;
     }
 }
