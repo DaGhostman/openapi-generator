@@ -57,7 +57,9 @@ class Serializer
         }
 
         if ($document->hasSecurity()) {
-            $result['security'] = [static::serializeSecurity($document->getSecurity())];
+            foreach ($document->getSecurity() as $security) {
+                $result['security'][] = static::serializeSecurity($security);
+            }
         }
 
         foreach ($document->getTags() as $tag) {
