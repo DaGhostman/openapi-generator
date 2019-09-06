@@ -11,7 +11,14 @@ trait InfoHandler
 
     private static function serializeInfo(Info $info)
     {
-        $result = $info->extract();
+        $result = $info->extract([
+            'title',
+            'version',
+            'termsUrl',
+            'contact',
+            'license',
+            'description',
+        ]);
         if (isset($result['license'])) {
             $result['license'] = static::serializeLicense($result['license']);
         }

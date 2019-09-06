@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 namespace OpenAPI\Spec\V3;
 
+use OpenAPI\Spec\Entities\Components\RequestBody;
 use OpenAPI\Spec\Entities\Components\Response;
 use OpenAPI\Spec\Entities\Components\Schema;
 use OpenAPI\Spec\Entities\Document;
@@ -14,6 +15,10 @@ class Serializer
     use Traits\SecurityHandler;
     use Traits\PathHandler;
     use Traits\ResponseHandler;
+    use Traits\RequestBodyHandler;
+    use Traits\SchemaHandler;
+    use Traits\TagHandler;
+    use Traits\ExternalDocsHandler;
 
     public static function serialize(Document $document): array
     {
@@ -44,6 +49,10 @@ class Serializer
                 if ($component instanceof Schema) {
                     $result['components'][$type][$name] = static::serializeSchema($component);
                 }
+
+                if ($component instanceof RequestBody) {
+                    $result['components'][$type][$name] = static::serializeRequestBody($component);
+                }
             }
         }
 
@@ -53,11 +62,11 @@ class Serializer
 
         foreach ($document->getTags() as $tag) {
             /** @var Tag $tag */
-            $result['tags'][] = $tag;
+            $result['tags'][] = static::serializeTag($tag);
         }
 
-        if ($document->hasExternalDoc()) {
-            $result['externalDocs'] = $document->getExternalDoc();
+        if ($document->hasExternalDocs()) {
+            $result['externalDocs'] = static::serializeExternalDocs($document->getExternalDocs());
         }
 
         return $result;

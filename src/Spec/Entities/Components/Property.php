@@ -9,7 +9,7 @@ use OpenAPI\Spec\Interfaces\Component;
 class Property implements Component
 {
     private $examples = [];
-    private $values = [];
+    private $enum = [];
 
     use Named, Formatted;
 
@@ -41,19 +41,24 @@ class Property implements Component
         return !empty($this->examples);
     }
 
-    public function setValues(array $values)
+    public function setEnum(array $enum)
     {
-        $this->values = $values;
+        $this->enum = $enum;
     }
 
-    public function getValues(): array
+    public function getEnum(): array
     {
-        return $this->values;
+        return $this->enum;
     }
 
-    public function hasValues(): bool
+    public function addEnum($value)
     {
-        return !empty($this->values);
+        $this->enum[] = $value;
+    }
+
+    public function hasEnum(): bool
+    {
+        return !empty($this->enum);
     }
 
     public function jsonSerialize(): array
@@ -68,14 +73,12 @@ class Property implements Component
             ];
         } else {
             if ($this->hasFormat()) {
-                return [
-                    (stripos($this->getFormat(), '#') === 0 ? '$ref' : 'format') => $this->getFormat()
-                ];
+                $result[(stripos($this->getFormat(), '#') === 0 ? '$ref' : 'format')] = $this->getFormat();
             }
         }
 
-        if ($this->hasValues()) {
-            $result['enum'] = $this->getValues();
+        if ($this->hasEnum()) {
+            $result['enum'] = $this->getEnum();
         }
 
         if ($this->hasExamples()) {

@@ -37,6 +37,11 @@ class RequestBody implements Component
         $this->content[$name] = $type;
     }
 
+    public function getContent()
+    {
+        return $this->content;
+    }
+
     public function jsonSerialize(): array
     {
         $response = [

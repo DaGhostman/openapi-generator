@@ -13,7 +13,12 @@ trait ResponseHandler
 
     private static function serializeResponse(Response $response): array
     {
-        $result = $response->extract();
+        $result = $response->extract([
+            'description',
+            'headers',
+            'content',
+            'links',
+        ]);
         if (isset($result['headers'])) {
             foreach ($result['headers'] as $name => $header) {
                 if ($header instanceof ReferenceObject) {

@@ -13,19 +13,19 @@ use OpenAPI\Spec\Entities\Components\ExternalDoc;
 
 trait Documentable
 {
-    private $externalDoc;
+    private $externalDocs;
     public function setExternalDoc(ExternalDoc $doc)
     {
-        $this->externalDoc = $doc;
+        $this->externalDocs = $doc;
     }
 
-    public function getExternalDoc(): ?ExternalDoc
+    public function getExternalDocs(): ?ExternalDoc
     {
-        return $this->externalDoc;
+        return $this->externalDocs;
     }
 
-    public function hasExternalDoc(): bool
+    public function hasExternalDocs(): bool
     {
-        return $this->externalDoc !== null;
+        return $this->externalDocs !== null;
     }
 }

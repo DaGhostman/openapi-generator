@@ -1,185 +1,131 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Swagger Petstore",
+        "title": "Demo API",
         "version": "1.0.0",
-        "description": "Swagger/OpenAPI specification generator",
         "contact": {
-            "name": "Dimitar Dimitrov",
-            "email": "daghostman.dd@gmail.com"
+            "url": "https://example.com",
+            "name": "me"
         },
-        "license": {
-            "name": "MIT"
-        }
+        "description": "A very cool api that totally needs to be documented for others"
     },
     "servers": [
         {
-            "url": "http://petstore.swagger.io/v1"
+            "variables": {
+                "foo": {
+                    "default": "bar"
+                }
+            },
+            "url": "https://example.com"
         }
     ],
     "paths": {
-        "/pets": {
+        "/products": {
             "get": {
-                "operationId": "listPets",
-                "summary": "List all pets",
-                "parameters": [
-                    {
-                        "name": "limit",
-                        "in": "query",
-                        "required": false,
-                        "description": "How many items to return at one time (max 100)",
-                        "schema": {
-                            "type": "integer",
-                            "format": "int32"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
-                        "description": "A paged array of pets",
-                        "headers": {
-                            "x-next": {
-                                "description": "A link to the next page of responses",
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Pets"
-                                }
-                            }
-                        }
+                        "$ref": "#/components/responses/Product"
                     },
-                    "default": {
-                        "description": "unexpected error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
-                                }
-                            }
-                        }
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
                     }
-                },
-                "tags": [
-                    "pets"
-                ]
+                }
             },
             "post": {
-                "operationId": "createPets",
-                "summary": "Create a pet",
                 "responses": {
                     "201": {
-                        "description": "Null response"
+                        "$ref": "#/components/responses/Created"
                     },
-                    "default": {
-                        "description": "unexpected error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
-                                }
-                            }
-                        }
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
                     }
-                },
-                "tags": [
-                    "pets"
-                ]
-            }
-        },
-        "/pets/{petId}": {
-            "get": {
-                "operationId": "showPetById",
-                "summary": "Info for a specific pet",
-                "parameters": [
-                    {
-                        "name": "petId",
-                        "in": "path",
-                        "required": true,
-                        "description": "The id of the pet to retrieve",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Expected response to a valid request",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Pets"
-                                }
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "unexpected error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "pets"
-                ]
+                }
             }
         }
     },
     "components": {
         "schemas": {
-            "Pet": {
-                "type": "object",
-                "required": [
-                    "id",
-                    "name"
-                ],
+            "ProductList": {
                 "properties": {
                     "id": {
                         "type": "integer",
-                        "format": "int64"
+                        "format": "int64",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            },
+            "Product": {
+                "properties": {
+                    "id": {
+                        "type": "number",
+                        "format": "int64",
+                        "example": 1
                     },
                     "name": {
-                        "type": "string"
-                    },
-                    "tag": {
-                        "type": "string"
+                        "type": "string",
+                        "example": "Product #1"
                     }
-                }
-            },
-            "Pets": {
-                "type": "array",
-                "items": {
-                    "$ref": "#/components/schemas/Pet"
                 }
             },
             "Error": {
-                "type": "object",
-                "required": [
-                    "code",
-                    "message"
-                ],
                 "properties": {
-                    "code": {
-                        "type": "integer",
-                        "format": "int32"
-                    },
                     "message": {
                         "type": "string"
+                    },
+                    "code": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "details": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
                     }
-                }
+                },
+                "type": "object"
+            }
+        },
+        "responses": {
+            "Product": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Product"
+                        }
+                    }
+                },
+                "description": "Returns a single product"
+            },
+            "NotFound": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                },
+                "description": "Not Found Page"
+            },
+            "Created": {
+                "headers": {
+                    "Link": {
+                        "description": "The location of the newly created resource",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ProductList"
+                        }
+                    }
+                },
+                "description": "Object Successfully created"
             }
         }
-    },
-    "externalDocs": {
-        "url": "http://example.com"
     }
 }
