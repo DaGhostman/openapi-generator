@@ -26,4 +26,18 @@ trait SchemaHandler
 
         return $result;
     }
+
+    private static function parseSchema(string $name, array $schema): Schema
+    {
+        $object = (new Schema($name))->hydrate($schema);
+        if (isset($schema['format']) || isset($schema['items'])) {
+            $object->setFormat($schema['format'] ?? $schema['items']);
+        }
+
+        foreach ($schema['properties'] ?? [] as $name => $property) {
+            $object->addProperty(static::parseProperty($name, $property));
+        }
+
+        return $object;
+    }
 }

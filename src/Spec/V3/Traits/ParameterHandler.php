@@ -25,4 +25,14 @@ trait ParameterHandler
 
         return (array) $result;
     }
+
+    private static function parseParameter(array $parameter): Parameter
+    {
+        return (new Parameter(
+            $parameter['name'],
+            $parameter['allowEmptyValue'] ?? false,
+            $parameter['deprecated'] ?? false)
+        )->hydrate($parameter)
+            ->hydrate($parameter['schema'] ?? []);
+    }
 }

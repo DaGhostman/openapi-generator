@@ -17,4 +17,12 @@ trait ExampleHandler
 
         return $result;
     }
+
+    private static function parseExample($example): Example
+    {
+        return new Example(
+            is_array($example) ? ($example['value'] ?? $example['externalValue']) : $example,
+            is_array($example) && isset($example['externalValue'])
+        );
+    }
 }

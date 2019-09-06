@@ -21,4 +21,11 @@ trait HeaderHandler
 
         return $result;
     }
+
+    private static function parseHeader(string $name, array $header): Header
+    {
+        return (new Header($name, $header['required'] ?? true, $header['deprecated'] ?? false))
+            ->hydrate($header)
+            ->hydrate($header['schema'] ?? []);
+    }
 }

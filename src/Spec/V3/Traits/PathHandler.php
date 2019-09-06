@@ -25,4 +25,22 @@ trait PathHandler
 
         return $result;
     }
+
+    private static function parsePath(string $name, array $path): Path
+    {
+        /** @var Path $object */
+        $object = (new Path($name))->hydrate($path);
+        foreach ($path['parameters'] ?? [] as $parameter) {
+            $object->addParameter(static::parseParameter($parameter));
+        }
+
+        $operations = array_filter($path, function ($key) {
+            return !in_array($key, ['name', 'description', 'summary', 'parameters']);
+        }, ARRAY_FILTER_USE_KEY);
+        foreach ($operations as $name => $operation) {
+            $object->addOperation(static::parseOperation($name, $operation));
+        }
+
+        return $object;
+    }
 }

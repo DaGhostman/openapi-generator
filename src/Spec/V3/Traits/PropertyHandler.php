@@ -1,7 +1,6 @@
 <?php
 namespace OpenAPI\Spec\V3\Traits;
 
-use OpenAPI\Spec\Entities\Components\Example;
 use OpenAPI\Spec\Entities\Components\Property;
 
 trait PropertyHandler
@@ -27,5 +26,20 @@ trait PropertyHandler
         }
 
         return $result;
+    }
+
+    private static function parseProperty(string $name, array $property): Property
+    {
+        $object = (new Property(
+            $name,
+            $property['type'],
+            $property['format'] ?? $property['items']['type'] ?? $property['$ref'] ?? ''
+        ))->hydrate($property);
+
+        if (isset($property['example'])) {
+            $object->addExample(static::parseExample($property['example']));
+        }
+
+        return $object;
     }
 }

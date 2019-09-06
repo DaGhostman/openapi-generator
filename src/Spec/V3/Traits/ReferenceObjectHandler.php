@@ -9,4 +9,9 @@ trait ReferenceObjectHandler
     {
         return ['$ref' => $ref->getRef()];
     }
+
+    private static function parseReferenceObject(array $ref): ReferenceObject
+    {
+        return new ReferenceObject($ref['$ref']);
+    }
 }

@@ -24,7 +24,7 @@ trait ServerHandler
     {
         if (isset($definition['variables'])) {
             foreach ($definition['variables'] as $index => $variable) {
-                $definition['variables'][$index] = (new ServerVariable(''))->hydrate($variable);
+                $definition['variables'][$index] = static::parseVariable($variable);
             }
         }
 

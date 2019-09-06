@@ -10,6 +10,7 @@ trait OperationHandler
     use ParameterHandler;
     use ResponseHandler;
     use ReferenceObjectHandler;
+    use RequestBodyHandler;
 
     private static function serializeOperation(Operation $operation)
     {
@@ -45,9 +46,29 @@ trait OperationHandler
         }
 
         if (isset($result['requestBody'])) {
-            $result['requestBody'] = static::serializeReferenceObject($result['requestObject']);
+            $result['requestBody'] = static::serializeRequestBody($result['requestObject']);
         }
 
         return $result;
+    }
+
+    private static function parseOperation(string $name, array $operation): Operation
+    {
+        if (isset($operation['requestBody'])) {
+            $operation['requestBody'] = static::parseRequestBody($operation['requestBody']);
+        }
+
+        /** @var Operation $object */
+        $object = (new Operation($name))->hydrate($operation);
+        foreach ($operation['responses'] ?? [] as $code => $response) {
+            if (isset($response['$ref'])) {
+                $object->addResponse($code, static::parseReferenceObject($response));
+                continue;
+            }
+
+            $object->addResponse($code, static::parseResponse($code, $response));
+        }
+
+        return $object;
     }
 }

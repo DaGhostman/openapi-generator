@@ -19,7 +19,7 @@ class Property implements Component
     {
         $this->setName($name);
         $this->setType($type);
-        $this->setFormat($format);
+        (string) $this->setFormat($format);
     }
 
     public function addExample(Component $example)

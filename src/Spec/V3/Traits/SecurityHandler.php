@@ -10,8 +10,8 @@ trait SecurityHandler
         return $security->extract();
     }
 
-    private static function parseSecurity($definition)
+    private static function parseSecurity(string $name, $definition): Security
     {
-        return (new Security())->hydrate($definition);
+        return (new Security($name))->hydrate($definition);
     }
 }

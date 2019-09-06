@@ -4,7 +4,6 @@ namespace OpenAPI\Spec\V3;
 use OpenAPI\Interfaces\ParserInterface;
 use OpenAPI\Interfaces\ReaderInterface;
 use OpenAPI\Spec\Entities\Components\Example;
-use OpenAPI\Spec\Entities\Components\ExternalDoc;
 use OpenAPI\Spec\Entities\Components\Header;
 use OpenAPI\Spec\Entities\Components\MediaType;
 use OpenAPI\Spec\Entities\Components\Operation;
@@ -18,13 +17,19 @@ use OpenAPI\Spec\Entities\Info;
 use OpenAPI\Spec\Entities\Information\Contact;
 use OpenAPI\Spec\Entities\Information\License;
 use OpenAPI\Spec\Entities\Path;
-use OpenAPI\Spec\Entities\Security;
 use OpenAPI\Spec\Entities\Server;
 use OpenAPI\Spec\Entities\ServerVariable;
-use OpenAPI\Spec\Entities\Tag;
 
 class Parser implements ParserInterface
 {
+    use Traits\InfoHandler;
+    use Traits\SchemaHandler;
+    use Traits\SecurityHandler;
+    use Traits\ServerHandler;
+    use Traits\PathHandler;
+    use Traits\TagHandler;
+    use Traits\ExternalDocsHandler;
+
     private const HTTP_METHODS = ['GET', 'HEAD', 'PUT', 'POST', 'PATCH', 'DELETE', 'OPTIONS', 'TRACE'];
     /** @var ReaderInterface $reader */
     private $reader;
@@ -38,7 +43,7 @@ class Parser implements ParserInterface
     {
         $raw = $this->reader->parseFile($file);
         $document = new Document(
-            $this->handleInfo($raw['info'])
+            static::parseInfo($raw['info'])
         );
 
         if (isset($raw['security'])) {
@@ -50,45 +55,31 @@ class Parser implements ParserInterface
         }
 
         foreach ($raw['components']['schemas'] ?? [] as $name => $schema) {
-            $document->addComponent($this->handleSchema($name, $schema));
+            $document->addComponent(static::parseSchema($name, $schema));
         }
 
         foreach ($raw['components']['securitySchemes'] ?? [] as $name => $schema) {
-            $security = new Security($name);
-            $security->setType($schema['type']);
-            $security->setBearerFormat($schema['bearerFormat'] ?? '');
-            $security->setOpenIdConnectUrl($schema['openIdConnectUrl'] ?? '');
-            $security->setPlace($schema['in'] ?? '');
-            $security->setScheme($schema['scheme'] ?? '');
-            $security->setDescription($schema['description'] ?? '');
+            $document->addComponent(static::parseSecurity($name, $schema));
+        }
 
-            $document->addComponent($security);
+        foreach ($raw['components']['responses'] ?? [] as $code => $response) {
+            $document->addComponent(static::parseResponse((string) $code, $response));
         }
 
         foreach ($raw['servers'] ?? [] as $server) {
-            $document->addServer($this->handleServer($server));
+            $document->addServer(static::parseServer($server));
         }
 
         foreach ($raw['paths'] ?? [] as $uri => $path) {
-           $document->addPath($this->handlePath($document, $uri, $path));
+           $document->addPath(static::parsePath($uri, $path));
         }
 
         foreach ($raw['tags'] ?? [] as $tag) {
-            $t = new Tag($tag['name']);
-            $t->setDescription($tag['description'] ?? '');
-            if (isset($tag['externalDocs'])) {
-                $doc = new ExternalDoc($tag['externalDocs']['url']);
-                $doc->setDescription($tag['externalDocs'][''] ?? '');
-                $t->setExternalDoc($doc);
-            }
-
-            $document->addTag($t);
+            $document->addTag(static::parseTag($tag));
         }
 
         if(isset($raw['externalDocs'])) {
-            $docs = new ExternalDoc($raw['externalDocs']['url']);
-            $docs->setDescription($raw['externalDocs']['description'] ?? '');
-            $document->setExternalDoc($docs);
+            $document->setExternalDoc(static::parseExternalDocs($raw['externalDocs']));
         }
 
         return $document;

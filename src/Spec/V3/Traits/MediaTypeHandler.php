@@ -13,4 +13,9 @@ trait MediaTypeHandler
             'schema' => static::serializeReferenceObject($media->getReferenceObject()),
         ];
     }
+
+    private static function parseMediaType(array $mediaType): MediaType
+    {
+        return (new MediaType(static::parseReferenceObject($mediaType['schema'])));
+    }
 }

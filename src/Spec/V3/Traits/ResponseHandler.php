@@ -13,7 +13,7 @@ trait ResponseHandler
 
     private static function serializeResponse(Response $response): array
     {
-        $result = $response->extract([
+        $result = (array) $response->extract([
             'description',
             'headers',
             'content',
@@ -38,5 +38,20 @@ trait ResponseHandler
         }
 
         return $result;
+    }
+
+    private static function parseResponse(string $code, array $response): Response
+    {
+        /** @var Response $object */
+        $object = (new Response($code))->hydrate($response);
+        foreach ($response['headers'] ?? [] as $name => $header) {
+            $object->addHeader(static::parseHeader($name, $header));
+        }
+
+        foreach ($response['content'] ?? [] as $type => $content) {
+            $object->addContent($type, static::parseMediaType($content));
+        }
+
+        return $object;
     }
 }

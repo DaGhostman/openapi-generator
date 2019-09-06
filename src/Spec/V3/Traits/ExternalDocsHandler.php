@@ -12,4 +12,9 @@ trait ExternalDocsHandler
 
         return $result;
     }
+
+    private static function parseExternalDocs(array $externalDoc): ExternalDoc
+    {
+        return (new ExternalDoc($externalDoc['url']))->hydrate($externalDoc);
+    }
 }

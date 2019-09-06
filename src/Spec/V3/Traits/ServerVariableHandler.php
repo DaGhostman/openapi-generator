@@ -10,7 +10,7 @@ trait ServerVariableHandler
         return $variable->extract();
     }
 
-    private static function parseVariable(array $variable)
+    private static function parseVariable(array $variable): ServerVariable
     {
         return (new ServerVariable($variable['default'] ?? ''))->hydrate($variable);
     }

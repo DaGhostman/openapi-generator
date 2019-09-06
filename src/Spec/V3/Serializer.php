@@ -57,7 +57,7 @@ class Serializer
         }
 
         if ($document->hasSecurity()) {
-            $result['security'] = [static::parseSecurity($document->getSecurity())];
+            $result['security'] = [static::serializeSecurity($document->getSecurity())];
         }
 
         foreach ($document->getTags() as $tag) {
