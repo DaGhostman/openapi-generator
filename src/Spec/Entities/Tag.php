@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 namespace OpenAPI\Spec\Entities;
 
+use Onion\Framework\Common\Hydrator\MethodHydrator;
 use OpenAPI\Spec\Entities\Helpers\Describable;
 use OpenAPI\Spec\Entities\Helpers\Documentable;
 use OpenAPI\Spec\Interfaces\Component;
@@ -10,6 +11,7 @@ class Tag implements Component
     private $name;
 
     use Describable, Documentable;
+    use MethodHydrator;
 
     public function __construct(string $name)
     {
